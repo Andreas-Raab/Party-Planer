@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Party-Planer</title>
+<style>
+  :root {
+    --bg: #fbf7f2;
+    --card: #ffffff;
+    --border: #ece4d8;
+    --text: #2b2820;
+    --text-muted: #8a8172;
+    --accent: #c1592a;
+    --accent-2: #e8a33d;
+    --accent-bg: #fbe9dc;
+    --yes: #4a7c2a;
+    --yes-bg: #ecf3e2;
+    --no: #b13c3c;
+    --no-bg: #fbebeb;
+    --radius: 14px;
+    --shadow: 0 2px 10px rgba(60, 40, 10, 0.06);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, #fdf3e7 0%, var(--bg) 220px);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 18px 70px; }
+  .header { text-align: center; margin-bottom: 26px; }
+  .header .emoji { font-size: 40px; line-height: 1; }
+  h1 { font-size: 24px; font-weight: 700; margin: 8px 0 4px; }
+  .subtitle { color: var(--text-muted); font-size: 14px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    height: fit-content;
+  }
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 760px) {
+    .columns { grid-template-columns: 1fr; }
+  }
+  .card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text);
+  }
+  .card h2 .count-pill {
+    background: var(--accent-bg);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  label { display: block; font-size: 12.5px; color: var(--text-muted); margin: 10px 0 5px; font-weight: 600; }
+  input[type=text] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    background: #fffdfb;
+    transition: border-color 0.15s;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  .rsvp-buttons { display: flex; gap: 10px; margin-top: 16px; }
+  .rsvp-buttons button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fffdfb;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .rsvp-buttons button:hover { border-color: var(--accent); }
+  .btn-yes.active { background: var(--yes-bg); border-color: var(--yes); color: var(--yes); }
+  .btn-no.active { background: var(--no-bg); border-color: var(--no); color: var(--no); }
+  .food-row { display: flex; gap: 8px; margin-top: 16px; }
+  .food-row input { flex: 1; }
+  .food-row button {
+    padding: 11px 16px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 18px;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .food-row button:hover { background: #a84a22; }
+  .food-row button:disabled { opacity: 0.5; cursor: default; }
+  .error { color: var(--no); font-size: 13px; margin-top: 8px; display: none; }
+  .status-line { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+
+  .list-col { display: flex; flex-direction: column; gap: 0; }
+  .list-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 2px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .list-row:last-child { border-bottom: none; }
+  .list-row .icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+  .list-row .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .list-row .label .sub { color: var(--text-muted); font-size: 11.5px; margin-left: 4px; }
+  .list-row.no .label { color: var(--no); opacity: 0.75; text-decoration: line-through; }
+  .list-row.yes .label { color: var(--yes); font-weight: 600; }
+
+  .empty { color: var(--text-muted); font-size: 13px; padding: 6px 0; }
+  .loading-screen {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 80px 0;
+    font-size: 14px;
+  }
+  .loading-screen .spinner-big {
+    width: 28px; height: 28px;
+    border: 3px solid var(--accent-2);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="emoji">🎉</div>
+    <h1 id="party-title">Party-Planer</h1>
+    <div class="subtitle">Sag Bescheid, ob du kommst, und trag ein, was du mitbringst.</div>
+  </div>
+
+  <div id="loading" class="loading-screen">
+    <div class="spinner-big"></div>
+    Lade Daten …
+  </div>
+
+  <div id="content" style="display:none;">
+   <div class="columns">
+
+    <div class="card">
+      <h2>Deine Zusage</h2>
+      <label for="guest-name">Dein Name</label>
+      <input type="text" id="guest-name" placeholder="z. B. Julia">
+      <div class="rsvp-buttons">
+        <button class="btn-yes" id="btn-yes">✅ Ich komme</button>
+        <button class="btn-no" id="btn-no">❌ Ich kann nicht</button>
+      </div>
+      <div class="error" id="rsvp-error">Bitte gib zuerst deinen Namen ein.</div>
+      <div class="status-line" id="rsvp-status"></div>
+
+      <label for="food-item">Was bringst du mit?</label>
+      <div class="food-row">
+        <input type="text" id="food-item" placeholder="z. B. Kartoffelsalat">
+        <button id="food-add">+</button>
+      </div>
+      <div class="error" id="food-error">Bitte Namen (oben) und Gericht eingeben.</div>
+    </div>
+
+    <div class="card">
+      <h2>Wer kommt <span class="count-pill" id="guest-count">0</span></h2>
+      <div class="list-col" id="guest-list"><div class="empty">Noch keine Zusagen.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Essensliste <span class="count-pill" id="food-count">0</span></h2>
+      <div class="list-col" id="food-list"><div class="empty">Noch nichts eingetragen.</div></div>
+    </div>
+
+   </div>
+  </div>
+</div>
+
+<script>
+const guestNameInput = document.getElementById('guest-name');
+const btnYes = document.getElementById('btn-yes');
+const btnNo = document.getElementById('btn-no');
+const rsvpError = document.getElementById('rsvp-error');
+const rsvpStatus = document.getElementById('rsvp-status');
+const guestList = document.getElementById('guest-list');
+const guestCount = document.getElementById('guest-count');
+const foodItemInput = document.getElementById('food-item');
+const foodAddBtn = document.getElementById('food-add');
+const foodError = document.getElementById('food-error');
+const foodList = document.getElementById('food-list');
+const foodCount = document.getElementById('food-count');
+const loadingEl = document.getElementById('loading');
+const contentEl = document.getElementById('content');
+
+let guests = {};   // { name: 'yes' | 'no' }
+let foods = [];     // [{ name, item, imgUrl }]
+let rememberedName = '';
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+const ICON_RULES = [
+  [/pizza/i, '🍕'], [/salat/i, '🥗'], [/kuchen|torte|cake/i, '🍰'],
+  [/pasta|nudel|spaghetti|lasagne/i, '🍝'], [/brot|baguette/i, '🍞'],
+  [/käse|kaese/i, '🧀'], [/wurst|grill|bbq|steak|fleisch/i, '🍖'],
+  [/hähnchen|huhn|chicken/i, '🍗'], [/fisch|lachs|sushi/i, '🍣'],
+  [/suppe/i, '🍲'], [/dip|guacamole/i, '🥑'], [/chips|snack|flips|erdnussflips/i, '🍿'],
+  [/keks|cookie/i, '🍪'], [/muffin|cupcake/i, '🧁'], [/donut|krapfen/i, '🍩'],
+  [/melone/i, '🍉'], [/erdbeer/i, '🍓'], [/apfel/i, '🍎'], [/traube/i, '🍇'],
+  [/banane/i, '🍌'], [/obstsalat|obst|frucht/i, '🍓'],
+  [/wein/i, '🍷'], [/sekt|prosecco|champagner/i, '🥂'],
+  [/bier/i, '🍺'], [/cocktail/i, '🍹'],
+  [/wasser/i, '💧'], [/getränk|saft|drink|limo|softdrink/i, '🥤'],
+  [/kaffee/i, '☕'], [/tee\b/i, '🍵'], [/eis(?!en)/i, '🍨'],
+  [/schokolade|schoko/i, '🍫'], [/reis/i, '🍚'], [/wrap|burrito|taco/i, '🌯'],
+  [/burger/i, '🍔'], [/hotdog/i, '🌭'], [/pommes|fries/i, '🍟'],
+  [/ei(er)?\b/i, '🥚'], [/gemüse|gemuese|rohkost/i, '🥕'],
+  [/kartoffel/i, '🥔'], [/mais/i, '🌽'], [/oliven?/i, '🫒'],
+  [/quiche|tarte/i, '🥧'], [/sandwich|belegtes brot|canap/i, '🥪'],
+  [/hummus/i, '🧆'], [/tapas|antipasti/i, '🍢'], [/kebap|kebab|döner/i, '🥙'],
+  [/curry/i, '🍛'], [/dessert|nachtisch|nachspeise/i, '🍮'],
+  [/nuss|nüsse|erdnuss|mandel|cashew/i, '🥜'], [/waffel/i, '🧇'],
+  [/pfannkuchen|crêpe|crepe/i, '🥞'], [/marshmallow/i, '🍡'],
+  [/lolli|bonbon|süßigkeit|sweets|gummibär/i, '🍬'],
+];
+
+function iconFor(itemName) {
+  for (const [pattern, icon] of ICON_RULES) {
+    if (pattern.test(itemName)) return icon;
+  }
+  return '🍽️';
+}
+
+const JSONBIN_ID = '6aa6a1f8ffd5d16053016fc5';
+const JSONBIN_KEY = '$2a$10$dOxzKDOFJPtLBoEVDlqdI.o5DkLIpwYRl8sTiewUIq3h/xKYraWuW';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+
+async function loadData() {
+  try {
+    const response = await fetch(`${JSONBIN_URL}/latest`, {
+      headers: { 'X-Access-Key': JSONBIN_KEY }
+    });
+    if (!response.ok) throw new Error('Laden fehlgeschlagen');
+    const data = await response.json();
+    const record = data.record || {};
+    guests = record.guests || {};
+    foods = record.foods || [];
+  } catch (e) {
+    console.error('Daten konnten nicht geladen werden', e);
+    guests = {};
+    foods = [];
+  }
+
+  render();
+  loadingEl.style.display = 'none';
+  contentEl.style.display = 'block';
+}
+
+async function saveData() {
+  try {
+    await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_KEY },
+      body: JSON.stringify({ guests, foods })
+    });
+  } catch (e) {
+    console.error('Speichern fehlgeschlagen', e);
+  }
+}
+
+function updateRsvpButtons() {
+  const name = guestNameInput.value.trim();
+  const status = guests[name];
+  btnYes.classList.toggle('active', status === 'yes');
+  btnNo.classList.toggle('active', status === 'no');
+  rsvpStatus.textContent = status
+    ? (status === 'yes' ? 'Du hast zugesagt.' : 'Du hast abgesagt.')
+    : '';
+}
+
+async function setRsvp(status) {
+  const name = guestNameInput.value.trim();
+  if (!name) { rsvpError.style.display = 'block'; return; }
+  rsvpError.style.display = 'none';
+  rememberedName = name;
+  guests[name] = status;
+  await saveData();
+  updateRsvpButtons();
+  render();
+}
+
+btnYes.addEventListener('click', () => setRsvp('yes'));
+btnNo.addEventListener('click', () => setRsvp('no'));
+guestNameInput.addEventListener('input', () => {
+  rsvpError.style.display = 'none';
+  updateRsvpButtons();
+});
+
+foodAddBtn.addEventListener('click', async () => {
+  const name = guestNameInput.value.trim();
+  const item = foodItemInput.value.trim();
+  if (!name || !item) { foodError.style.display = 'block'; return; }
+  foodError.style.display = 'none';
+  rememberedName = name;
+  foods.push({ name, item, icon: iconFor(item) });
+  foodItemInput.value = '';
+  await saveData();
+  render();
+});
+
+foodItemInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') foodAddBtn.click(); });
+foodItemInput.addEventListener('input', () => { foodError.style.display = 'none'; });
+
+function render() {
+  const names = Object.keys(guests);
+  const yesCount = names.filter(n => guests[n] === 'yes').length;
+  guestCount.textContent = yesCount;
+  foodCount.textContent = foods.length;
+
+  if (names.length === 0) {
+    guestList.innerHTML = '<div class="empty">Noch keine Zusagen.</div>';
+  } else {
+    guestList.innerHTML = names.map(name => {
+      const status = guests[name];
+      return `<div class="list-row ${status}">
+        <span class="icon">${status === 'yes' ? '✅' : '❌'}</span>
+        <span class="label">${escapeHtml(name)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  if (foods.length === 0) {
+    foodList.innerHTML = '<div class="empty">Noch nichts eingetragen.</div>';
+  } else {
+    foodList.innerHTML = foods.map(f => `<div class="list-row">
+      <span class="icon">${f.icon || iconFor(f.item)}</span>
+      <span class="label">${escapeHtml(f.item)}<span class="sub">von ${escapeHtml(f.name)}</span></span>
+    </div>`).join('');
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
