@@ -29,6 +29,11 @@
     color: var(--text);
     line-height: 1.5;
   }
+  .festive-bar {
+    height: 5px;
+    background: linear-gradient(90deg, #b5892f, #d9b25c, #4a6741, #b5892f);
+    background-size: 300% 100%;
+  }
   .wrap { max-width: 980px; margin: 0 auto; padding: 32px 18px 70px; }
   .header { text-align: center; margin-bottom: 26px; }
   .header .emoji { font-size: 40px; line-height: 1; }
@@ -117,6 +122,15 @@
   .food-row button:disabled { opacity: 0.5; cursor: default; }
   .error { color: var(--no); font-size: 13px; margin-top: 8px; display: none; }
   .status-line { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .hint {
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    line-height: 1.4;
+  }
 
   .list-col { display: flex; flex-direction: column; gap: 0; }
   .list-row {
@@ -133,6 +147,17 @@
   .list-row .label .sub { color: var(--text-muted); font-size: 11.5px; margin-left: 4px; }
   .list-row.no .label { color: var(--no); opacity: 0.75; text-decoration: line-through; }
   .list-row.yes .label { color: var(--yes); font-weight: 600; }
+  .list-row .row-actions { display: flex; gap: 2px; flex-shrink: 0; }
+  .list-row .row-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 3px 5px;
+    border-radius: 6px;
+    opacity: 0.6;
+  }
+  .list-row .row-actions button:hover { opacity: 1; background: var(--accent-bg); }
 
   .empty { color: var(--text-muted); font-size: 13px; padding: 6px 0; }
   .loading-screen {
@@ -152,9 +177,10 @@
 </style>
 </head>
 <body>
+<div class="festive-bar"></div>
 <div class="wrap">
   <div class="header">
-    <div class="emoji">🎉</div>
+    <div class="emoji">🎉❄️</div>
     <h1 id="party-title">Party-Planer</h1>
     <div class="subtitle">Sag Bescheid, ob du kommst, und trag ein, was du mitbringst.</div>
   </div>
@@ -171,6 +197,7 @@
       <h2>Deine Zusage</h2>
       <label for="guest-name">Dein Name</label>
       <input type="text" id="guest-name" placeholder="z. B. Julia">
+      <div class="hint">👪 Kommt ihr als Familie oder Gruppe? Bitte für <strong>jede Person einzeln</strong> eintragen (z. B. „Julia", „Max", „Mia").</div>
       <div class="rsvp-buttons">
         <button class="btn-yes" id="btn-yes">✅ Ich komme</button>
         <button class="btn-no" id="btn-no">❌ Ich kann nicht</button>
@@ -184,6 +211,7 @@
         <button id="food-add">+</button>
       </div>
       <div class="error" id="food-error">Bitte Namen (oben) und Gericht eingeben.</div>
+      <div class="status-line">Tipp: Gib deinen Namen oben ein, dann kannst du deine eigenen Einträge später bearbeiten oder löschen.</div>
     </div>
 
     <div class="card">
@@ -217,13 +245,23 @@ const loadingEl = document.getElementById('loading');
 const contentEl = document.getElementById('content');
 
 let guests = {};   // { name: 'yes' | 'no' }
-let foods = [];     // [{ name, item, imgUrl }]
+let foods = [];     // [{ id, name, item, icon }]
 let rememberedName = '';
+let editingFoodId = null;
 
 function escapeHtml(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function isMine(entryName) {
+  const current = guestNameInput.value.trim().toLowerCase();
+  return current.length > 0 && entryName.toLowerCase() === current;
 }
 
 const ICON_RULES = [
@@ -272,6 +310,7 @@ async function loadData() {
     const record = data.record || {};
     guests = record.guests || {};
     foods = record.foods || [];
+    foods.forEach(f => { if (!f.id) f.id = makeId(); });
   } catch (e) {
     console.error('Daten konnten nicht geladen werden', e);
     guests = {};
@@ -316,12 +355,43 @@ async function setRsvp(status) {
   render();
 }
 
+async function removeGuest(name) {
+  if (!confirm(`Zusage von "${name}" wirklich entfernen?`)) return;
+  delete guests[name];
+  await saveData();
+  updateRsvpButtons();
+  render();
+}
+
 btnYes.addEventListener('click', () => setRsvp('yes'));
 btnNo.addEventListener('click', () => setRsvp('no'));
 guestNameInput.addEventListener('input', () => {
   rsvpError.style.display = 'none';
   updateRsvpButtons();
+  render();
 });
+
+function startEditFood(id) {
+  const entry = foods.find(f => f.id === id);
+  if (!entry) return;
+  editingFoodId = id;
+  foodItemInput.value = entry.item;
+  foodItemInput.focus();
+  foodAddBtn.textContent = '✓';
+  foodAddBtn.title = 'Änderung speichern';
+}
+
+async function removeFood(id) {
+  if (!confirm('Diesen Eintrag wirklich löschen?')) return;
+  foods = foods.filter(f => f.id !== id);
+  if (editingFoodId === id) {
+    editingFoodId = null;
+    foodItemInput.value = '';
+    foodAddBtn.textContent = '+';
+  }
+  await saveData();
+  render();
+}
 
 foodAddBtn.addEventListener('click', async () => {
   const name = guestNameInput.value.trim();
@@ -329,7 +399,20 @@ foodAddBtn.addEventListener('click', async () => {
   if (!name || !item) { foodError.style.display = 'block'; return; }
   foodError.style.display = 'none';
   rememberedName = name;
-  foods.push({ name, item, icon: iconFor(item) });
+
+  if (editingFoodId) {
+    const entry = foods.find(f => f.id === editingFoodId);
+    if (entry) {
+      entry.item = item;
+      entry.icon = iconFor(item);
+      entry.name = name;
+    }
+    editingFoodId = null;
+    foodAddBtn.textContent = '+';
+    foodAddBtn.title = '';
+  } else {
+    foods.push({ id: makeId(), name, item, icon: iconFor(item) });
+  }
   foodItemInput.value = '';
   await saveData();
   render();
@@ -349,9 +432,13 @@ function render() {
   } else {
     guestList.innerHTML = names.map(name => {
       const status = guests[name];
+      const mine = isMine(name);
       return `<div class="list-row ${status}">
         <span class="icon">${status === 'yes' ? '✅' : '❌'}</span>
         <span class="label">${escapeHtml(name)}</span>
+        ${mine ? `<div class="row-actions">
+          <button onclick="removeGuest('${name.replace(/'/g, "\\'")}')" title="Entfernen">🗑️</button>
+        </div>` : ''}
       </div>`;
     }).join('');
   }
@@ -359,10 +446,17 @@ function render() {
   if (foods.length === 0) {
     foodList.innerHTML = '<div class="empty">Noch nichts eingetragen.</div>';
   } else {
-    foodList.innerHTML = foods.map(f => `<div class="list-row">
+    foodList.innerHTML = foods.map(f => {
+      const mine = isMine(f.name);
+      return `<div class="list-row">
       <span class="icon">${f.icon || iconFor(f.item)}</span>
       <span class="label">${escapeHtml(f.item)}<span class="sub">von ${escapeHtml(f.name)}</span></span>
-    </div>`).join('');
+      ${mine ? `<div class="row-actions">
+        <button onclick="startEditFood('${f.id}')" title="Bearbeiten">✏️</button>
+        <button onclick="removeFood('${f.id}')" title="Löschen">🗑️</button>
+      </div>` : ''}
+    </div>`;
+    }).join('');
   }
 }
 
