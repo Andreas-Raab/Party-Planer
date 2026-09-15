@@ -36,9 +36,45 @@
   }
   .wrap { max-width: 980px; margin: 0 auto; padding: 32px 18px 70px; }
   .header { text-align: center; margin-bottom: 26px; }
-  .header .emoji { font-size: 40px; line-height: 1; }
-  h1 { font-size: 24px; font-weight: 700; margin: 8px 0 4px; }
+  .header .hero-image {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: var(--shadow);
+    border: 3px solid #fff;
+    outline: 2px solid var(--accent-2);
+    outline-offset: 2px;
+  }
+  h1 { font-size: 24px; font-weight: 700; margin: 12px 0 4px; }
   .subtitle { color: var(--text-muted); font-size: 14px; }
+  .countdown {
+    display: inline-flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .countdown .unit {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    min-width: 58px;
+    box-shadow: var(--shadow);
+  }
+  .countdown .unit .num {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    line-height: 1.1;
+  }
+  .countdown .unit .lbl {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .countdown.done { font-size: 14px; font-weight: 700; color: var(--yes); margin-top: 14px; }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -180,9 +216,10 @@
 <div class="festive-bar"></div>
 <div class="wrap">
   <div class="header">
-    <div class="emoji">🎉❄️</div>
+    <img src="gingerbread-50.jpg" alt="50" class="hero-image">
     <h1 id="party-title">Party-Planer</h1>
     <div class="subtitle">Sag Bescheid, ob du kommst, und trag ein, was du mitbringst.</div>
+    <div class="countdown" id="countdown"></div>
   </div>
 
   <div id="loading" class="loading-screen">
@@ -194,18 +231,18 @@
    <div class="columns">
 
     <div class="card">
-      <h2>Deine Zusage</h2>
+      <h2 id="rsvp-form-title">Deine Zusage</h2>
       <label for="guest-name">Dein Name</label>
-      <input type="text" id="guest-name" placeholder="z. B. Julia">
+      <input type="text" id="guest-name" placeholder="Bitte alle Vornamen eintragen">
       <div class="hint">👪 Kommt ihr als Familie oder Gruppe? Bitte für <strong>jede Person einzeln</strong> eintragen (z. B. „Julia", „Max", „Mia").</div>
       <div class="rsvp-buttons">
-        <button class="btn-yes" id="btn-yes">✅ Ich komme</button>
-        <button class="btn-no" id="btn-no">❌ Ich kann nicht</button>
+        <button class="btn-yes" id="btn-yes">✅ Ich/Wir kommen</button>
+        <button class="btn-no" id="btn-no">❌ Ich/Wir kommen nicht</button>
       </div>
       <div class="error" id="rsvp-error">Bitte gib zuerst deinen Namen ein.</div>
       <div class="status-line" id="rsvp-status"></div>
 
-      <label for="food-item">Was bringst du mit?</label>
+      <label for="food-item">Mein / Unser Beitrag zum Buffet</label>
       <div class="food-row">
         <input type="text" id="food-item" placeholder="z. B. Kartoffelsalat">
         <button id="food-add">+</button>
@@ -215,7 +252,7 @@
     </div>
 
     <div class="card">
-      <h2>Wer kommt <span class="count-pill" id="guest-count">0</span></h2>
+      <h2 id="guest-list-heading">Wer kommt <span class="count-pill" id="guest-count">0</span></h2>
       <div class="list-col" id="guest-list"><div class="empty">Noch keine Zusagen.</div></div>
     </div>
 
@@ -249,6 +286,12 @@ let foods = [];     // [{ id, name, item, icon }]
 let rememberedName = '';
 let editingFoodId = null;
 
+const HOST_NAME = 'barbara';
+
+function isHost() {
+  return guestNameInput.value.trim().toLowerCase() === HOST_NAME;
+}
+
 function escapeHtml(str) {
   const d = document.createElement('div');
   d.textContent = str;
@@ -263,6 +306,37 @@ function isMine(entryName) {
   const current = guestNameInput.value.trim().toLowerCase();
   return current.length > 0 && entryName.toLowerCase() === current;
 }
+
+// ---- Countdown ----
+// TODO: Datum/Uhrzeit der Feier eintragen, sobald bekannt (Format: 'YYYY-MM-DDTHH:mm:00')
+const PARTY_DATE = null; // z. B. '2026-12-20T16:00:00'
+
+function renderCountdown() {
+  const el = document.getElementById('countdown');
+  if (!PARTY_DATE) { el.style.display = 'none'; return; }
+  const target = new Date(PARTY_DATE).getTime();
+  const now = Date.now();
+  const diff = target - now;
+
+  if (diff <= 0) {
+    el.className = 'countdown done';
+    el.textContent = '🎉 Die Feier läuft schon!';
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+  el.className = 'countdown';
+  el.innerHTML = `
+    <div class="unit"><span class="num">${days}</span><span class="lbl">Tage</span></div>
+    <div class="unit"><span class="num">${hours}</span><span class="lbl">Std</span></div>
+    <div class="unit"><span class="num">${minutes}</span><span class="lbl">Min</span></div>
+  `;
+}
+renderCountdown();
+setInterval(renderCountdown, 60000);
 
 const ICON_RULES = [
   [/pizza/i, '🍕'], [/salat/i, '🥗'], [/kuchen|torte|cake/i, '🍰'],
@@ -424,23 +498,44 @@ foodItemInput.addEventListener('input', () => { foodError.style.display = 'none'
 function render() {
   const names = Object.keys(guests);
   const yesCount = names.filter(n => guests[n] === 'yes').length;
-  guestCount.textContent = yesCount;
   foodCount.textContent = foods.length;
 
-  if (names.length === 0) {
-    guestList.innerHTML = '<div class="empty">Noch keine Zusagen.</div>';
-  } else {
-    guestList.innerHTML = names.map(name => {
-      const status = guests[name];
-      const mine = isMine(name);
-      return `<div class="list-row ${status}">
+  const currentName = guestNameInput.value.trim();
+  const heading = document.getElementById('guest-list-heading');
+
+  if (isHost()) {
+    heading.innerHTML = `Wer kommt <span class="count-pill" id="guest-count">${yesCount}</span>`;
+    if (names.length === 0) {
+      guestList.innerHTML = '<div class="empty">Noch keine Zusagen.</div>';
+    } else {
+      guestList.innerHTML = names.map(name => {
+        const status = guests[name];
+        return `<div class="list-row ${status}">
+          <span class="icon">${status === 'yes' ? '✅' : '❌'}</span>
+          <span class="label">${escapeHtml(name)}</span>
+          <div class="row-actions">
+            <button onclick="removeGuest('${name.replace(/'/g, "\\'")}')" title="Entfernen">🗑️</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  } else if (currentName) {
+    heading.textContent = 'Meine Zusage';
+    const status = guests[currentName];
+    if (!status) {
+      guestList.innerHTML = '<div class="empty">Du hast noch nicht zu- oder abgesagt.</div>';
+    } else {
+      guestList.innerHTML = `<div class="list-row ${status}">
         <span class="icon">${status === 'yes' ? '✅' : '❌'}</span>
-        <span class="label">${escapeHtml(name)}</span>
-        ${mine ? `<div class="row-actions">
-          <button onclick="removeGuest('${name.replace(/'/g, "\\'")}')" title="Entfernen">🗑️</button>
-        </div>` : ''}
+        <span class="label">${escapeHtml(currentName)}</span>
+        <div class="row-actions">
+          <button onclick="removeGuest('${currentName.replace(/'/g, "\\'")}')" title="Entfernen">🗑️</button>
+        </div>
       </div>`;
-    }).join('');
+    }
+  } else {
+    heading.textContent = 'Meine Zusage';
+    guestList.innerHTML = '<div class="empty">Trag oben deinen Namen ein, um deine Zusage zu sehen.</div>';
   }
 
   if (foods.length === 0) {
