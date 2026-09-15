@@ -50,30 +50,23 @@
   .subtitle { color: var(--text-muted); font-size: 14px; }
   .countdown {
     display: inline-flex;
-    gap: 10px;
-    margin-top: 16px;
+    gap: 18px;
+    margin-top: 22px;
   }
-  .countdown .unit {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 12px;
-    min-width: 58px;
-    box-shadow: var(--shadow);
+  .countdown .ornament-wrap { text-align: center; }
+  .countdown .ribbon { width: 4px; height: 10px; margin: 0 auto; border-radius: 1px; }
+  .countdown .ornament {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 -6px 10px rgba(0,0,0,0.18), 0 3px 8px rgba(60,40,10,0.12);
   }
-  .countdown .unit .num {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--accent);
-    display: block;
-    line-height: 1.1;
-  }
-  .countdown .unit .lbl {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
+  .countdown .ornament .num { font-size: 19px; font-weight: 700; color: #fff; line-height: 1.1; }
+  .countdown .ornament .lbl { font-size: 8px; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 1px; }
   .countdown.done { font-size: 14px; font-weight: 700; color: var(--yes); margin-top: 14px; }
   .card {
     background: var(--card);
@@ -308,8 +301,7 @@ function isMine(entryName) {
 }
 
 // ---- Countdown ----
-// TODO: Datum/Uhrzeit der Feier eintragen, sobald bekannt (Format: 'YYYY-MM-DDTHH:mm:00')
-const PARTY_DATE = null; // z. B. '2026-12-20T16:00:00'
+const PARTY_DATE = '2026-12-19T19:00:00'; // 50. Geburtstag, 19.12.2026, 19 Uhr
 
 function renderCountdown() {
   const el = document.getElementById('countdown');
@@ -330,9 +322,24 @@ function renderCountdown() {
 
   el.className = 'countdown';
   el.innerHTML = `
-    <div class="unit"><span class="num">${days}</span><span class="lbl">Tage</span></div>
-    <div class="unit"><span class="num">${hours}</span><span class="lbl">Std</span></div>
-    <div class="unit"><span class="num">${minutes}</span><span class="lbl">Min</span></div>
+    <div class="ornament-wrap">
+      <div class="ribbon" style="background:#b5892f;"></div>
+      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #e8a33d, #c1592a);">
+        <span class="num">${days}</span><span class="lbl">Tage</span>
+      </div>
+    </div>
+    <div class="ornament-wrap">
+      <div class="ribbon" style="background:#4a6741;"></div>
+      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #6d8f5f, #4a6741);">
+        <span class="num">${hours}</span><span class="lbl">Std</span>
+      </div>
+    </div>
+    <div class="ornament-wrap">
+      <div class="ribbon" style="background:#b13c3c;"></div>
+      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #d96a6a, #b13c3c);">
+        <span class="num">${minutes}</span><span class="lbl">Min</span>
+      </div>
+    </div>
   `;
 }
 renderCountdown();
