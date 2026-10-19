@@ -188,6 +188,29 @@
   }
   .list-row .row-actions button:hover { opacity: 1; background: var(--accent-bg); }
 
+  .food-pill-list { display: flex; flex-direction: column; gap: 8px; }
+  .food-pill {
+    background: var(--accent-bg);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .food-pill .row-actions { opacity: 0.45; }
+  .food-pill:hover .row-actions { opacity: 1; }
+  .food-pill .row-actions button { background: rgba(255,255,255,0.6); }
+  @keyframes popIn {
+    0%   { transform: scale(0.92); background: #f6c877; box-shadow: 0 0 0 0 rgba(193,89,42,0.35); }
+    40%  { transform: scale(1.015); background: #f6c877; box-shadow: 0 0 0 8px rgba(193,89,42,0.12); }
+    100% { transform: scale(1); background: var(--accent-bg); box-shadow: 0 0 0 0 rgba(193,89,42,0); }
+  }
+  .food-pill.new-entry { animation: popIn 1.4s ease-out; }
+
   .empty { color: var(--text-muted); font-size: 13px; padding: 6px 0; }
   .loading-screen {
     text-align: center;
@@ -250,8 +273,8 @@
     </div>
 
     <div class="card">
-      <h2>Essensliste <span class="count-pill" id="food-count">0</span></h2>
-      <div class="list-col" id="food-list"><div class="empty">Noch nichts eingetragen.</div></div>
+      <h2 id="food-list-heading">Essensliste <span class="count-pill" id="food-count">0</span></h2>
+      <div class="food-pill-list" id="food-list"><div class="empty">Noch nichts eingetragen.</div></div>
     </div>
 
    </div>
@@ -302,6 +325,17 @@ function isMine(entryName) {
 
 // ---- Countdown ----
 const PARTY_DATE = '2026-12-19T19:00:00'; // 50. Geburtstag, 19.12.2026, 19 Uhr
+
+const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+function setFoodHeading() {
+  const heading = document.getElementById('food-list-heading');
+  if (!PARTY_DATE) { heading.innerHTML = `Beitrag zum Buffet <span class="count-pill" id="food-count">0</span>`; return; }
+  const d = new Date(PARTY_DATE);
+  const dateStr = `${d.getDate()}. ${MONTHS_DE[d.getMonth()]}`;
+  heading.innerHTML = `Beitrag zum Buffet am ${dateStr} <span class="count-pill" id="food-count">0</span>`;
+}
+setFoodHeading();
 
 function renderCountdown() {
   const el = document.getElementById('countdown');
@@ -381,7 +415,9 @@ const JSONBIN_ID = '6aa6a1f8ffd5d16053016fc5';
 const JSONBIN_KEY = '$2a$10$dOxzKDOFJPtLBoEVDlqdI.o5DkLIpwYRl8sTiewUIq3h/xKYraWuW';
 const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
 
-async function loadData() {
+let knownFoodIds = new Set();
+
+async function loadData(isPoll) {
   try {
     const response = await fetch(`${JSONBIN_URL}/latest`, {
       headers: { 'X-Access-Key': JSONBIN_KEY }
@@ -390,18 +426,33 @@ async function loadData() {
     const data = await response.json();
     const record = data.record || {};
     guests = record.guests || {};
-    foods = record.foods || [];
-    foods.forEach(f => { if (!f.id) f.id = makeId(); });
+    const newFoods = record.foods || [];
+    newFoods.forEach(f => { if (!f.id) f.id = makeId(); });
+
+    if (isPoll) {
+      const newlyAdded = newFoods
+        .map(f => f.id)
+        .filter(id => !knownFoodIds.has(id));
+      foods = newFoods;
+      foods.forEach(f => knownFoodIds.add(f.id));
+      render();
+      if (newlyAdded.length) flashNewFoodEntries(newlyAdded);
+      return;
+    }
+
+    foods = newFoods;
+    foods.forEach(f => knownFoodIds.add(f.id));
   } catch (e) {
     console.error('Daten konnten nicht geladen werden', e);
-    guests = {};
-    foods = [];
+    if (!isPoll) { guests = {}; foods = []; }
   }
 
   render();
   loadingEl.style.display = 'none';
   contentEl.style.display = 'block';
 }
+
+setInterval(() => loadData(true), 15000);
 
 async function saveData() {
   try {
@@ -492,7 +543,14 @@ foodAddBtn.addEventListener('click', async () => {
     foodAddBtn.textContent = '+';
     foodAddBtn.title = '';
   } else {
-    foods.push({ id: makeId(), name, item, icon: iconFor(item) });
+    const newEntry = { id: makeId(), name, item, icon: iconFor(item) };
+    foods.push(newEntry);
+    knownFoodIds.add(newEntry.id);
+    foodItemInput.value = '';
+    await saveData();
+    render();
+    flashNewFoodEntries([newEntry.id]);
+    return;
   }
   foodItemInput.value = '';
   await saveData();
@@ -505,7 +563,8 @@ foodItemInput.addEventListener('input', () => { foodError.style.display = 'none'
 function render() {
   const names = Object.keys(guests);
   const yesCount = names.filter(n => guests[n] === 'yes').length;
-  foodCount.textContent = foods.length;
+  const foodCountEl = document.getElementById('food-count');
+  if (foodCountEl) foodCountEl.textContent = foods.length;
 
   const currentName = guestNameInput.value.trim();
   const heading = document.getElementById('guest-list-heading');
@@ -550,9 +609,8 @@ function render() {
   } else {
     foodList.innerHTML = foods.map(f => {
       const mine = isMine(f.name);
-      return `<div class="list-row">
-      <span class="icon">${f.icon || iconFor(f.item)}</span>
-      <span class="label">${escapeHtml(f.item)}<span class="sub">von ${escapeHtml(f.name)}</span></span>
+      return `<div class="food-pill" data-food-id="${f.id}">
+      <span class="label">${escapeHtml(f.item)}</span>
       ${mine ? `<div class="row-actions">
         <button onclick="startEditFood('${f.id}')" title="Bearbeiten">✏️</button>
         <button onclick="removeFood('${f.id}')" title="Löschen">🗑️</button>
@@ -560,6 +618,16 @@ function render() {
     </div>`;
     }).join('');
   }
+}
+
+function flashNewFoodEntries(ids) {
+  ids.forEach(id => {
+    const el = foodList.querySelector(`[data-food-id="${id}"]`);
+    if (el) {
+      el.classList.add('new-entry');
+      setTimeout(() => el.classList.remove('new-entry'), 1400);
+    }
+  });
 }
 
 loadData();
