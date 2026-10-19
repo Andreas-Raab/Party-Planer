@@ -6,41 +6,45 @@
 <title>Party-Planer</title>
 <style>
   :root {
-    --bg: #fbf7f2;
-    --card: #ffffff;
-    --border: #ece4d8;
-    --text: #2b2820;
-    --text-muted: #8a8172;
-    --accent: #c1592a;
-    --accent-2: #e8a33d;
-    --accent-bg: #fbe9dc;
+    --bg: #fdf8f0;
+    --card: #fffdf9;
+    --border: #e8d7bd;
+    --text: #4a2c12;
+    --text-muted: #9c7a52;
+    --accent: #a7591c;
+    --accent-2: #c97b2e;
+    --accent-bg: #f3e4cb;
+    --berry: #983c0d;
+    --pine: #748b30;
     --radius: 14px;
-    --shadow: 0 2px 10px rgba(60, 40, 10, 0.06);
+    --shadow: 0 2px 10px rgba(80, 45, 10, 0.08);
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(180deg, #fdf3e7 0%, var(--bg) 220px);
+    background: linear-gradient(180deg, #fbefdb 0%, var(--bg) 220px);
     color: var(--text);
     line-height: 1.5;
   }
   .festive-bar {
     height: 5px;
-    background: linear-gradient(90deg, #b5892f, #d9b25c, #4a6741, #b5892f);
+    background: linear-gradient(90deg, var(--accent), var(--berry), var(--pine), var(--accent-2), var(--accent));
     background-size: 300% 100%;
   }
   .wrap { max-width: 560px; margin: 0 auto; padding: 32px 18px 70px; }
   .header { text-align: center; margin-bottom: 26px; }
   .header .hero-image {
-    width: 130px;
-    height: 130px;
-    object-fit: cover;
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    background: #fff;
     border-radius: 50%;
     box-shadow: var(--shadow);
-    border: 3px solid #fff;
-    outline: 2px solid var(--accent-2);
-    outline-offset: 2px;
+    border: 4px solid #fff;
+    outline: 3px dashed var(--accent-2);
+    outline-offset: 4px;
+    padding: 6px;
   }
   h1 { font-size: 24px; font-weight: 700; margin: 12px 0 4px; }
   .subtitle { color: var(--text-muted); font-size: 14px; }
@@ -114,7 +118,7 @@
     white-space: nowrap;
     line-height: 1;
   }
-  .food-row button:hover { background: #a84a22; }
+  .food-row button:hover { background: #8a4616; }
   .error { color: #b13c3c; font-size: 13px; margin-top: -10px; margin-bottom: 14px; display: none; }
 
   .food-pill-list { display: flex; flex-direction: column; gap: 8px; }
@@ -144,11 +148,11 @@
   }
   .food-pill .row-actions button:hover { background: #fff; }
   @keyframes popIn {
-    0%   { transform: scale(0.9); background: #f6c877; box-shadow: 0 0 0 0 rgba(177,60,60,0.35); }
-    25%  { transform: scale(1.04); background: #f2a7a7; box-shadow: 0 0 0 6px rgba(177,60,60,0.18); }
-    50%  { transform: scale(1.01); background: #bcd9a8; box-shadow: 0 0 0 10px rgba(74,103,65,0.10); }
-    75%  { transform: scale(1.015); background: #f6c877; box-shadow: 0 0 0 6px rgba(193,89,42,0.12); }
-    100% { transform: scale(1); background: var(--accent-bg); box-shadow: 0 0 0 0 rgba(193,89,42,0); }
+    0%   { transform: scale(0.9); background: #e8b35e; box-shadow: 0 0 0 0 rgba(152,60,13,0.35); }
+    25%  { transform: scale(1.04); background: #d98f6a; box-shadow: 0 0 0 6px rgba(152,60,13,0.18); }
+    50%  { transform: scale(1.01); background: #b7c285; box-shadow: 0 0 0 10px rgba(116,139,48,0.12); }
+    75%  { transform: scale(1.015); background: #e8b35e; box-shadow: 0 0 0 6px rgba(167,89,28,0.14); }
+    100% { transform: scale(1); background: var(--accent-bg); box-shadow: 0 0 0 0 rgba(167,89,28,0); }
   }
   .food-pill.new-entry { animation: popIn 1.8s ease-out; }
 
@@ -262,20 +266,20 @@ function renderCountdown() {
   el.className = 'countdown';
   el.innerHTML = `
     <div class="ornament-wrap">
-      <div class="ribbon" style="background:#b5892f;"></div>
-      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #e8a33d, #c1592a);">
+      <div class="ribbon" style="background:#8a6a3a;"></div>
+      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #c97b2e, #a7591c);">
         <span class="num">${days}</span><span class="lbl">Tage</span>
       </div>
     </div>
     <div class="ornament-wrap">
-      <div class="ribbon" style="background:#4a6741;"></div>
-      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #6d8f5f, #4a6741);">
+      <div class="ribbon" style="background:#5c6e28;"></div>
+      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #93a858, #748b30);">
         <span class="num">${hours}</span><span class="lbl">Std</span>
       </div>
     </div>
     <div class="ornament-wrap">
-      <div class="ribbon" style="background:#b13c3c;"></div>
-      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #d96a6a, #b13c3c);">
+      <div class="ribbon" style="background:#7a2f0a;"></div>
+      <div class="ornament" style="background: radial-gradient(circle at 35% 30%, #c25a28, #983c0d);">
         <span class="num">${minutes}</span><span class="lbl">Min</span>
       </div>
     </div>
