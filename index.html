@@ -14,10 +14,6 @@
     --accent: #c1592a;
     --accent-2: #e8a33d;
     --accent-bg: #fbe9dc;
-    --yes: #4a7c2a;
-    --yes-bg: #ecf3e2;
-    --no: #b13c3c;
-    --no-bg: #fbebeb;
     --radius: 14px;
     --shadow: 0 2px 10px rgba(60, 40, 10, 0.06);
   }
@@ -34,7 +30,7 @@
     background: linear-gradient(90deg, #b5892f, #d9b25c, #4a6741, #b5892f);
     background-size: 300% 100%;
   }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 18px 70px; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 32px 18px 70px; }
   .header { text-align: center; margin-bottom: 26px; }
   .header .hero-image {
     width: 130px;
@@ -48,11 +44,7 @@
   }
   h1 { font-size: 24px; font-weight: 700; margin: 12px 0 4px; }
   .subtitle { color: var(--text-muted); font-size: 14px; }
-  .countdown {
-    display: inline-flex;
-    gap: 18px;
-    margin-top: 22px;
-  }
+  .countdown { display: inline-flex; gap: 18px; margin-top: 22px; }
   .countdown .ornament-wrap { text-align: center; }
   .countdown .ribbon { width: 4px; height: 10px; margin: 0 auto; border-radius: 1px; }
   .countdown .ornament {
@@ -67,29 +59,19 @@
   }
   .countdown .ornament .num { font-size: 19px; font-weight: 700; color: #fff; line-height: 1.1; }
   .countdown .ornament .lbl { font-size: 8px; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 1px; }
-  .countdown.done { font-size: 14px; font-weight: 700; color: var(--yes); margin-top: 14px; }
+  .countdown.done { font-size: 14px; font-weight: 700; color: var(--accent); margin-top: 14px; }
+
   .card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 20px 22px;
-    margin-bottom: 18px;
-    height: fit-content;
-  }
-  .columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 18px;
-    align-items: start;
-  }
-  @media (max-width: 760px) {
-    .columns { grid-template-columns: 1fr; }
   }
   .card h2 {
     font-size: 15px;
     font-weight: 700;
-    margin: 0 0 14px;
+    margin: 0 0 16px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -107,7 +89,7 @@
     text-transform: none;
     letter-spacing: normal;
   }
-  label { display: block; font-size: 12.5px; color: var(--text-muted); margin: 10px 0 5px; font-weight: 600; }
+
   input[type=text] {
     width: 100%;
     padding: 11px 14px;
@@ -118,22 +100,7 @@
     transition: border-color 0.15s;
   }
   input[type=text]:focus { outline: none; border-color: var(--accent); }
-  .rsvp-buttons { display: flex; gap: 10px; margin-top: 16px; }
-  .rsvp-buttons button {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1.5px solid var(--border);
-    background: #fffdfb;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .rsvp-buttons button:hover { border-color: var(--accent); }
-  .btn-yes.active { background: var(--yes-bg); border-color: var(--yes); color: var(--yes); }
-  .btn-no.active { background: var(--no-bg); border-color: var(--no); color: var(--no); }
-  .food-row { display: flex; gap: 8px; margin-top: 16px; }
+  .food-row { display: flex; gap: 8px; margin-bottom: 18px; }
   .food-row input { flex: 1; }
   .food-row button {
     padding: 11px 16px;
@@ -148,48 +115,12 @@
     line-height: 1;
   }
   .food-row button:hover { background: #a84a22; }
-  .food-row button:disabled { opacity: 0.5; cursor: default; }
-  .error { color: var(--no); font-size: 13px; margin-top: 8px; display: none; }
-  .status-line { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
-  .hint {
-    font-size: 12px;
-    color: var(--accent);
-    background: var(--accent-bg);
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-top: 8px;
-    line-height: 1.4;
-  }
-
-  .list-col { display: flex; flex-direction: column; gap: 0; }
-  .list-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 2px;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
-  .list-row:last-child { border-bottom: none; }
-  .list-row .icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
-  .list-row .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .list-row .label .sub { color: var(--text-muted); font-size: 11.5px; margin-left: 4px; }
-  .list-row.no .label { color: var(--no); opacity: 0.75; text-decoration: line-through; }
-  .list-row.yes .label { color: var(--yes); font-weight: 600; }
-  .list-row .row-actions { display: flex; gap: 2px; flex-shrink: 0; }
-  .list-row .row-actions button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    padding: 3px 5px;
-    border-radius: 6px;
-    opacity: 0.6;
-  }
-  .list-row .row-actions button:hover { opacity: 1; background: var(--accent-bg); }
+  .error { color: #b13c3c; font-size: 13px; margin-top: -10px; margin-bottom: 14px; display: none; }
 
   .food-pill-list { display: flex; flex-direction: column; gap: 8px; }
   .food-pill {
+    position: relative;
+    overflow: visible;
     background: var(--accent-bg);
     border-radius: 10px;
     padding: 14px 16px;
@@ -201,23 +132,43 @@
     justify-content: space-between;
     gap: 10px;
   }
-  .food-pill .row-actions { opacity: 0.45; }
+  .food-pill .row-actions { display: flex; gap: 2px; opacity: 0.45; flex-shrink: 0; }
   .food-pill:hover .row-actions { opacity: 1; }
-  .food-pill .row-actions button { background: rgba(255,255,255,0.6); }
+  .food-pill .row-actions button {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 5px 7px;
+    border-radius: 6px;
+  }
+  .food-pill .row-actions button:hover { background: #fff; }
   @keyframes popIn {
-    0%   { transform: scale(0.92); background: #f6c877; box-shadow: 0 0 0 0 rgba(193,89,42,0.35); }
-    40%  { transform: scale(1.015); background: #f6c877; box-shadow: 0 0 0 8px rgba(193,89,42,0.12); }
+    0%   { transform: scale(0.9); background: #f6c877; box-shadow: 0 0 0 0 rgba(177,60,60,0.35); }
+    25%  { transform: scale(1.04); background: #f2a7a7; box-shadow: 0 0 0 6px rgba(177,60,60,0.18); }
+    50%  { transform: scale(1.01); background: #bcd9a8; box-shadow: 0 0 0 10px rgba(74,103,65,0.10); }
+    75%  { transform: scale(1.015); background: #f6c877; box-shadow: 0 0 0 6px rgba(193,89,42,0.12); }
     100% { transform: scale(1); background: var(--accent-bg); box-shadow: 0 0 0 0 rgba(193,89,42,0); }
   }
-  .food-pill.new-entry { animation: popIn 1.4s ease-out; }
+  .food-pill.new-entry { animation: popIn 1.8s ease-out; }
+
+  .sparkle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 16px;
+    pointer-events: none;
+    opacity: 0;
+    animation: sparkleFloat 1.3s ease-out forwards;
+  }
+  @keyframes sparkleFloat {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4) translateY(0); }
+    15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.1) translateY(-4px); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1) translateY(var(--rise, -42px)) translateX(var(--drift, 0px)); }
+  }
 
   .empty { color: var(--text-muted); font-size: 13px; padding: 6px 0; }
-  .loading-screen {
-    text-align: center;
-    color: var(--text-muted);
-    padding: 80px 0;
-    font-size: 14px;
-  }
+  .loading-screen { text-align: center; color: var(--text-muted); padding: 80px 0; font-size: 14px; }
   .loading-screen .spinner-big {
     width: 28px; height: 28px;
     border: 3px solid var(--accent-2);
@@ -226,6 +177,7 @@
     animation: spin 0.8s linear infinite;
     margin: 0 auto 14px;
   }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -234,7 +186,7 @@
   <div class="header">
     <img src="gingerbread-50.jpg" alt="50" class="hero-image">
     <h1 id="party-title">Party-Planer</h1>
-    <div class="subtitle">Sag Bescheid, ob du kommst, und trag ein, was du mitbringst.</div>
+    <div class="subtitle">Trag ein, was du zum Buffet mitbringst.</div>
     <div class="countdown" id="countdown"></div>
   </div>
 
@@ -244,69 +196,29 @@
   </div>
 
   <div id="content" style="display:none;">
-   <div class="columns">
-
     <div class="card">
-      <h2 id="rsvp-form-title">Deine Zusage</h2>
-      <label for="guest-name">Dein Name</label>
-      <input type="text" id="guest-name" placeholder="Bitte alle Vornamen eintragen">
-      <div class="hint">👪 Kommt ihr als Familie oder Gruppe? Bitte für <strong>jede Person einzeln</strong> eintragen (z. B. „Julia", „Max", „Mia").</div>
-      <div class="rsvp-buttons">
-        <button class="btn-yes" id="btn-yes">✅ Ich/Wir kommen</button>
-        <button class="btn-no" id="btn-no">❌ Ich/Wir kommen nicht</button>
-      </div>
-      <div class="error" id="rsvp-error">Bitte gib zuerst deinen Namen ein.</div>
-      <div class="status-line" id="rsvp-status"></div>
-
-      <label for="food-item">Mein / Unser Beitrag zum Buffet</label>
+      <h2 id="food-list-heading">Beitrag zum Buffet <span class="count-pill" id="food-count">0</span></h2>
       <div class="food-row">
         <input type="text" id="food-item" placeholder="z. B. Kartoffelsalat">
         <button id="food-add">+</button>
       </div>
-      <div class="error" id="food-error">Bitte Namen (oben) und Gericht eingeben.</div>
-      <div class="status-line">Tipp: Gib deinen Namen oben ein, dann kannst du deine eigenen Einträge später bearbeiten oder löschen.</div>
-    </div>
-
-    <div class="card">
-      <h2 id="guest-list-heading">Wer kommt <span class="count-pill" id="guest-count">0</span></h2>
-      <div class="list-col" id="guest-list"><div class="empty">Noch keine Zusagen.</div></div>
-    </div>
-
-    <div class="card">
-      <h2 id="food-list-heading">Essensliste <span class="count-pill" id="food-count">0</span></h2>
+      <div class="error" id="food-error">Bitte etwas eingeben.</div>
       <div class="food-pill-list" id="food-list"><div class="empty">Noch nichts eingetragen.</div></div>
     </div>
-
-   </div>
   </div>
 </div>
 
 <script>
-const guestNameInput = document.getElementById('guest-name');
-const btnYes = document.getElementById('btn-yes');
-const btnNo = document.getElementById('btn-no');
-const rsvpError = document.getElementById('rsvp-error');
-const rsvpStatus = document.getElementById('rsvp-status');
-const guestList = document.getElementById('guest-list');
-const guestCount = document.getElementById('guest-count');
 const foodItemInput = document.getElementById('food-item');
 const foodAddBtn = document.getElementById('food-add');
 const foodError = document.getElementById('food-error');
 const foodList = document.getElementById('food-list');
-const foodCount = document.getElementById('food-count');
 const loadingEl = document.getElementById('loading');
 const contentEl = document.getElementById('content');
 
-let guests = {};   // { name: 'yes' | 'no' }
-let foods = [];     // [{ id, name, item, icon }]
-let rememberedName = '';
+let foods = [];     // [{ id, item, icon }]
 let editingFoodId = null;
-
-const HOST_NAME = 'barbara';
-
-function isHost() {
-  return guestNameInput.value.trim().toLowerCase() === HOST_NAME;
-}
+let knownFoodIds = new Set();
 
 function escapeHtml(str) {
   const d = document.createElement('div');
@@ -318,14 +230,8 @@ function makeId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function isMine(entryName) {
-  const current = guestNameInput.value.trim().toLowerCase();
-  return current.length > 0 && entryName.toLowerCase() === current;
-}
-
-// ---- Countdown ----
+// ---- Countdown & Überschrift ----
 const PARTY_DATE = '2026-12-19T19:00:00'; // 50. Geburtstag, 19.12.2026, 19 Uhr
-
 const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 
 function setFoodHeading() {
@@ -341,8 +247,7 @@ function renderCountdown() {
   const el = document.getElementById('countdown');
   if (!PARTY_DATE) { el.style.display = 'none'; return; }
   const target = new Date(PARTY_DATE).getTime();
-  const now = Date.now();
-  const diff = target - now;
+  const diff = target - Date.now();
 
   if (diff <= 0) {
     el.className = 'countdown done';
@@ -379,6 +284,7 @@ function renderCountdown() {
 renderCountdown();
 setInterval(renderCountdown, 60000);
 
+// ---- Icons ----
 const ICON_RULES = [
   [/pizza/i, '🍕'], [/salat/i, '🥗'], [/kuchen|torte|cake/i, '🍰'],
   [/pasta|nudel|spaghetti|lasagne/i, '🍝'], [/brot|baguette/i, '🍞'],
@@ -411,11 +317,10 @@ function iconFor(itemName) {
   return '🍽️';
 }
 
+// ---- Speicher (jsonbin.io) ----
 const JSONBIN_ID = '6aa6a1f8ffd5d16053016fc5';
 const JSONBIN_KEY = '$2a$10$dOxzKDOFJPtLBoEVDlqdI.o5DkLIpwYRl8sTiewUIq3h/xKYraWuW';
 const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
-
-let knownFoodIds = new Set();
 
 async function loadData(isPoll) {
   try {
@@ -425,14 +330,11 @@ async function loadData(isPoll) {
     if (!response.ok) throw new Error('Laden fehlgeschlagen');
     const data = await response.json();
     const record = data.record || {};
-    guests = record.guests || {};
     const newFoods = record.foods || [];
     newFoods.forEach(f => { if (!f.id) f.id = makeId(); });
 
     if (isPoll) {
-      const newlyAdded = newFoods
-        .map(f => f.id)
-        .filter(id => !knownFoodIds.has(id));
+      const newlyAdded = newFoods.map(f => f.id).filter(id => !knownFoodIds.has(id));
       foods = newFoods;
       foods.forEach(f => knownFoodIds.add(f.id));
       render();
@@ -444,7 +346,7 @@ async function loadData(isPoll) {
     foods.forEach(f => knownFoodIds.add(f.id));
   } catch (e) {
     console.error('Daten konnten nicht geladen werden', e);
-    if (!isPoll) { guests = {}; foods = []; }
+    if (!isPoll) foods = [];
   }
 
   render();
@@ -452,57 +354,21 @@ async function loadData(isPoll) {
   contentEl.style.display = 'block';
 }
 
-setInterval(() => loadData(true), 15000);
-
 async function saveData() {
   try {
     await fetch(JSONBIN_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_KEY },
-      body: JSON.stringify({ guests, foods })
+      body: JSON.stringify({ foods })
     });
   } catch (e) {
     console.error('Speichern fehlgeschlagen', e);
   }
 }
 
-function updateRsvpButtons() {
-  const name = guestNameInput.value.trim();
-  const status = guests[name];
-  btnYes.classList.toggle('active', status === 'yes');
-  btnNo.classList.toggle('active', status === 'no');
-  rsvpStatus.textContent = status
-    ? (status === 'yes' ? 'Du hast zugesagt.' : 'Du hast abgesagt.')
-    : '';
-}
+setInterval(() => loadData(true), 15000);
 
-async function setRsvp(status) {
-  const name = guestNameInput.value.trim();
-  if (!name) { rsvpError.style.display = 'block'; return; }
-  rsvpError.style.display = 'none';
-  rememberedName = name;
-  guests[name] = status;
-  await saveData();
-  updateRsvpButtons();
-  render();
-}
-
-async function removeGuest(name) {
-  if (!confirm(`Zusage von "${name}" wirklich entfernen?`)) return;
-  delete guests[name];
-  await saveData();
-  updateRsvpButtons();
-  render();
-}
-
-btnYes.addEventListener('click', () => setRsvp('yes'));
-btnNo.addEventListener('click', () => setRsvp('no'));
-guestNameInput.addEventListener('input', () => {
-  rsvpError.style.display = 'none';
-  updateRsvpButtons();
-  render();
-});
-
+// ---- Essen hinzufügen / bearbeiten / löschen ----
 function startEditFood(id) {
   const entry = foods.find(f => f.id === id);
   if (!entry) return;
@@ -526,97 +392,67 @@ async function removeFood(id) {
 }
 
 foodAddBtn.addEventListener('click', async () => {
-  const name = guestNameInput.value.trim();
   const item = foodItemInput.value.trim();
-  if (!name || !item) { foodError.style.display = 'block'; return; }
+  if (!item) { foodError.style.display = 'block'; return; }
   foodError.style.display = 'none';
-  rememberedName = name;
 
   if (editingFoodId) {
     const entry = foods.find(f => f.id === editingFoodId);
-    if (entry) {
-      entry.item = item;
-      entry.icon = iconFor(item);
-      entry.name = name;
-    }
+    if (entry) { entry.item = item; entry.icon = iconFor(item); }
     editingFoodId = null;
     foodAddBtn.textContent = '+';
     foodAddBtn.title = '';
+    foodItemInput.value = '';
+    await saveData();
+    render();
   } else {
-    const newEntry = { id: makeId(), name, item, icon: iconFor(item) };
+    const newEntry = { id: makeId(), item, icon: iconFor(item) };
     foods.push(newEntry);
     knownFoodIds.add(newEntry.id);
     foodItemInput.value = '';
     await saveData();
     render();
     flashNewFoodEntries([newEntry.id]);
-    return;
   }
-  foodItemInput.value = '';
-  await saveData();
-  render();
 });
 
 foodItemInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') foodAddBtn.click(); });
 foodItemInput.addEventListener('input', () => { foodError.style.display = 'none'; });
 
 function render() {
-  const names = Object.keys(guests);
-  const yesCount = names.filter(n => guests[n] === 'yes').length;
   const foodCountEl = document.getElementById('food-count');
   if (foodCountEl) foodCountEl.textContent = foods.length;
-
-  const currentName = guestNameInput.value.trim();
-  const heading = document.getElementById('guest-list-heading');
-
-  if (isHost()) {
-    heading.innerHTML = `Wer kommt <span class="count-pill" id="guest-count">${yesCount}</span>`;
-    if (names.length === 0) {
-      guestList.innerHTML = '<div class="empty">Noch keine Zusagen.</div>';
-    } else {
-      guestList.innerHTML = names.map(name => {
-        const status = guests[name];
-        return `<div class="list-row ${status}">
-          <span class="icon">${status === 'yes' ? '✅' : '❌'}</span>
-          <span class="label">${escapeHtml(name)}</span>
-          <div class="row-actions">
-            <button onclick="removeGuest('${name.replace(/'/g, "\\'")}')" title="Entfernen">🗑️</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-  } else if (currentName) {
-    heading.textContent = 'Meine Zusage';
-    const status = guests[currentName];
-    if (!status) {
-      guestList.innerHTML = '<div class="empty">Du hast noch nicht zu- oder abgesagt.</div>';
-    } else {
-      guestList.innerHTML = `<div class="list-row ${status}">
-        <span class="icon">${status === 'yes' ? '✅' : '❌'}</span>
-        <span class="label">${escapeHtml(currentName)}</span>
-        <div class="row-actions">
-          <button onclick="removeGuest('${currentName.replace(/'/g, "\\'")}')" title="Entfernen">🗑️</button>
-        </div>
-      </div>`;
-    }
-  } else {
-    heading.textContent = 'Meine Zusage';
-    guestList.innerHTML = '<div class="empty">Trag oben deinen Namen ein, um deine Zusage zu sehen.</div>';
-  }
 
   if (foods.length === 0) {
     foodList.innerHTML = '<div class="empty">Noch nichts eingetragen.</div>';
   } else {
-    foodList.innerHTML = foods.map(f => {
-      const mine = isMine(f.name);
-      return `<div class="food-pill" data-food-id="${f.id}">
+    foodList.innerHTML = foods.map(f => `<div class="food-pill" data-food-id="${f.id}">
       <span class="label">${escapeHtml(f.item)}</span>
-      ${mine ? `<div class="row-actions">
+      <div class="row-actions">
         <button onclick="startEditFood('${f.id}')" title="Bearbeiten">✏️</button>
         <button onclick="removeFood('${f.id}')" title="Löschen">🗑️</button>
-      </div>` : ''}
-    </div>`;
-    }).join('');
+      </div>
+    </div>`).join('');
+  }
+}
+
+const SPARKLE_SYMBOLS = ['🎉', '✨', '❄️', '🎂'];
+
+function spawnSparkles(el) {
+  const count = 5;
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('span');
+    s.className = 'sparkle';
+    s.textContent = SPARKLE_SYMBOLS[Math.floor(Math.random() * SPARKLE_SYMBOLS.length)];
+    const drift = Math.round((Math.random() - 0.5) * 70); // -35px..35px
+    const rise = -36 - Math.round(Math.random() * 24); // -36..-60px
+    const leftOffset = (Math.random() - 0.5) * 60;
+    s.style.left = `calc(50% + ${leftOffset}px)`;
+    s.style.setProperty('--drift', `${drift}px`);
+    s.style.setProperty('--rise', `${rise}px`);
+    s.style.animationDelay = `${i * 70}ms`;
+    el.appendChild(s);
+    setTimeout(() => s.remove(), 1600);
   }
 }
 
@@ -625,7 +461,8 @@ function flashNewFoodEntries(ids) {
     const el = foodList.querySelector(`[data-food-id="${id}"]`);
     if (el) {
       el.classList.add('new-entry');
-      setTimeout(() => el.classList.remove('new-entry'), 1400);
+      spawnSparkles(el);
+      setTimeout(() => el.classList.remove('new-entry'), 1800);
     }
   });
 }
